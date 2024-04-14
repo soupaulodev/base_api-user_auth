@@ -1,0 +1,39 @@
+version: "3.7"
+
+services:
+  postgres:
+    image: bitnami/postgresql:latest
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=docker
+      - POSTGRES_PASSWORD=docker
+      - POSTGRES_DB=iofinance
+    volumes:
+      - iofinance_pg_data:/bitnami/postgresql
+
+  # redis:
+  #   image: bitnami/redis:latest
+  #   environment:
+  #     - ALLOW_EMPTY_PASSWORD=yes
+  #   ports:
+  #     - "6379:6379"
+  #   volumes:
+  #     - "iofinance_redis_data:/bitnami/redis/data"
+
+  dragonfly:
+    image: "docker.dragonflydb.io/dragonflydb/dragonfly"
+    ulimits:
+      memlock: -1
+    ports:
+      - "6379:6379"
+    # For better performance, consider `host` mode instead `port` to avoid docker NAT.
+    # `host` mode is NOT currently supported in Swarm Mode.
+    # https://docs.docker.com/compose/compose-file/compose-file-v3/#network_mode
+    # network_mode: "host"
+    volumes:
+      - iofinance_dragonfly_data:/data
+
+volumes:
+  iofinance_pg_data:
+  iofinance_dragonfly_data:
